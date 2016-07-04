@@ -1,0 +1,145 @@
+<pre class="metadata">
+Title: Ambient Atmospheric Pressure (Barometric) Sensor
+Level: 1
+Status: ED
+ED: https://w3c.github.io/barometer/
+Shortname: barometer
+TR: https://www.w3.org/TR/barometer/
+Editor: Kenneth Christiansen 41974, Intel Corporation, https://intel.com/
+Group: dap
+Abstract:
+  This specification defines a concrete sensor interface to monitor
+  to measure the atmospheric pressure.
+Version History: https://github.com/w3c/barometer/commits/gh-pages/index.bs
+!Bug Reports: <a href="https://www.github.com/w3c/barometer/issues/new">via the w3c/barometer repository on GitHub</a>
+Indent: 2
+Repository: w3c/barometer
+Markup Shorthands: markdown on
+Inline Github Issues: true
+!Issue Tracking: <a href="https://github.com/w3c/barometer/issues">Issues</a>
+!Test Suite: <a href="https://github.com/w3c/web-platform-tests/tree/master/barometer">web-platform-tests on GitHub</a>
+Boilerplate: omit issues-index
+Default Biblio Status: current
+</pre>
+<pre class="anchors">
+urlPrefix: https://w3c.github.io/permissions/; spec: PERMISSIONS
+  type: dfn
+    text: permission; url: idl-def-Permission
+    text: associated PermissionDescriptor;  url: dfn-associated-permissiondescriptor
+urlPrefix: https://w3c.github.io/sensors; spec: GENERIC-SENSOR
+  type: dfn
+    text: high-level
+    text: sensor subclass
+    text: sensorreading subclass
+    text: default sensor
+    text: supported reporting mode; url: supported-reporting-modes
+    text: auto
+    text: construct a sensor object; url: construct-sensor-object
+</pre>
+
+Introduction {#intro}
+============
+
+The Barometric Sensor extends the Generic Sensor API [[GENERIC-SENSOR]]
+to provide information about the ambient atmospheric pressure, as detected by the
+device's primary barometric sensor. 
+
+The pressure level is reported in hPa (millibar) and represents the local atmospheric
+pressure level, in contrast to many home barometers which are often adjusted to report
+the pressure as was it at sea level as that is used in weather reports.
+
+Examples {#examples}
+========
+
+<div class="example">
+    <pre highlight="js">
+    let sensor = new BarometicSensor();
+    sensor.start();
+
+    sensor.onchange = event => console.log(event.reading.pressure);
+
+    sensor.onerror = function(event) {
+        console.log(event.error.name, event.error.message);
+    };
+    </pre>
+</div>
+
+Security and Privacy Considerations {#security-and-privacy}
+===================================
+
+There are no specific security and privacy considerations
+beyond those described in the Generic Sensor API [[!GENERIC-SENSOR]].
+
+Model {#model}
+=====
+
+The Barometic Sensor's associated <a>Sensor subclass</a>
+is the {{BarometricSensor}} class.
+
+The Barometic Sensor's associated <a>SensorReading subclass</a>
+is the {{BarometricSensorReading}} class.
+
+The Barometic Sensor has a <a>default sensor</a>,
+which is the device's main barometic detector.
+
+The Barometic Sensor has a single <a>supported reporting mode</a>
+which is "<a>auto</a>".
+
+The Barometic Sensor's <a>permission</a> name is `"barometer"`.
+It has no <a>associated PermissionDescriptor</a>.
+
+The Barometic Sensor has an associated abstract operation
+to <dfn>retrieve the sensor permission</dfn> which
+must simply return a <a>permission</a> whose name is "barometer".
+
+The Barometic Sensor has an associated abstract operation
+to <dfn lt="Construct SensorReading Object">construct a SensorReading object</dfn>
+which creates a new {{BarometicSensorReading}} object and sets its
+<a attribute for="BarometicSensorReading">pressure</a> attribute to
+positive infinity.
+
+<dfn>Pressure</dfn> is a value that represents the the local atmospheric
+pressure level. Its unit is the hPa (millibar).
+
+API {#api}
+===
+
+The BarometricSensor Interface {#barometric-sensor-interface}
+--------------------------------
+
+<pre class="idl">
+  [Constructor(optional SensorOptions sensorOptions)]
+  interface BarometricSensor : Sensor {
+    readonly attribute BarometricSensorReading? reading;
+  };
+</pre>
+
+To <dfn>Construct an BarometricSensor Object</dfn> the user agent must invoke the
+<a>construct a Sensor object</a> abstract operation.
+
+The BarometricSensorReading Interface {#barometric-sensor-reading-interface}
+---------------------------------------
+
+<pre class="idl">
+  [Constructor(BarometricSensorReadingInit barometricSensorReadingInit)]
+  interface BarometricSensorReading : SensorReading {
+      readonly attribute unrestricted double? pressure;
+  };
+
+  dictionary BarometricSensorReadingInit {
+    unrestricted double? pressure;
+  };
+</pre>
+
+### The BarometricSensorReading constructor ### {#barometric-sensor-reading-constructor}
+
+### The pressure attribute ### {#barometric-sensor-reading-attribute-pressure}
+
+The <a attribute for="BarometricSensorReading">pressure</a> attribute of the {{BarometricSensorReading}}
+interface represents the local atmospheric pressure level in hPa (millibar).
+
+
+Acknowledgements {#acknowledgements}
+================
+
+Tobie Langel for the work on Generic Sensor API and inputs on this specification.
